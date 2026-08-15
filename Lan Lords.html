@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentinel - Disaster Detection Dashboard</title>
+    <link rel="stylesheet" href="Lan Lords.css">
+</head>
+<body>
+
+    <div id="login-view" class="view-container">
+        <div class="card" style="max-width: 400px; margin: 0 auto;">
+            <h2>Sentinel Login</h2>
+            <p>Access your disaster detection dashboard.</p>
+            <input type="text" id="username" placeholder="User ID (e.g., admin)" required>
+            <input type="password" id="password" placeholder="Password" required>
+            <button onclick="handleLogin()" style="width: 100%">Login</button>
+        </div>
+    </div>
+
+    <div id="dashboard-view" class="view-container hidden">
+        <div class="top-nav">
+            <div class="nav-actions">
+                <button onclick="openModal('profile-modal')">👤 User Profile</button>
+                <h2 id="welcome-msg" style="margin:0; margin-left: 16px;">Dashboard</h2>
+            </div>
+            <div class="nav-actions">
+                <div class="theme-switch" onclick="toggleTheme()">🌓 Toggle Theme</div>
+                <button class="secondary" onclick="openModal('settings-modal')">⚙️ Settings</button>
+            </div>
+        </div>
+
+        <h3>Active Sensors</h3>
+        <div class="sensor-grid">
+            <div class="card sensor-card" onclick="showHistory('Fire')">
+                <div class="sensor-icon">🔥</div>
+                <h3>Fire / Heat</h3>
+                <p>Current: 72°F</p>
+                <span class="status-badge status-safe">Safe</span>
+            </div>
+            <div class="card sensor-card" onclick="showHistory('Gas')">
+                <div class="sensor-icon">💨</div>
+                <h3>Gas / CO2</h3>
+                <p>Current: 15 PPM</p>
+                <span class="status-badge status-safe">Safe</span>
+            </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="upgrade-view" class="view-container hidden">
+        <div class="top-nav">
+            <h2>Select a Subscription</h2>
+            <button class="secondary" onclick="switchView('dashboard-view')">Back to Dashboard</button>
+        </div>
+        <div class="sub-grid">
+            <div class="card sub-card">
+                <h3>Silver</h3>
+                <div class="sub-price">$5 / mo<br><small style="color:var(--text-secondary); font-size:14px;">$55 / year</small></div>
+                <ul class="sub-features">
+                    <li>✔️Basic Sensor Monitoring</li>
+                    <li>✔️1 Beneficiary Allowed</li>
+                    <li>✔️ Real-time Browser Alerts</li>
+                    <li>✔️ Up to 5 connected sensors</li>
+                    <li>✔️ 24-hour log history</li>
+                    <li>✔️ Standard Email Support</li>
+                </ul>
+                <button onclick="goToPayment('Silver')">Select Silver</button>
+            </div>
+            <div class="card sub-card" style="border-color: var(--primary-brand); box-shadow: 0 0 0 2px var(--primary-brand);">
+                <h3>Gold</h3>
+                <div class="sub-price">$10 / mo<br><small style="color:var(--text-secondary); font-size:14px;">$110 / year</small></div>
+                <ul class="sub-features">
+                    <li>✔️Advanced Monitoring</li>
+                    <li>✔️Up to 4 Beneficiaries</li>
+                    <li>✔️ All Silver Features</li>
+                    <li>✔️ Email & SMS Alerts</li>
+                    <li>✔️ Up to 15 connected sensors</li>
+                    <li>✔️ 7-day log history</li>
+                    <li>✔️ Priority Support</li>
+                </ul>
+                <button onclick="goToPayment('Gold')">Select Gold</button>
+            </div>
+            <div class="card sub-card">
+                <h3>Platinum</h3>
+                <div class="sub-price">$25 / mo<br><small style="color:var(--text-secondary); font-size:14px;">$280 / year</small></div>
+                <ul class="sub-features">
+                    <li>✔️Real-time Data Export</li>
+                    <li>✔️WhatsApp CallMeBot Integration</li>
+                    <li>✔️Unlimited Beneficiaries</li>
+                    <li>✔️ All Gold Features</li>
+                    <li>✔️ WhatsApp Integration</li>
+                    <li>✔️ Unlimited connected sensors</li>
+                    <li>✔️ 30-day log history</li>
+                    <li>✔️ Automated Mitigation Control</li>
+                    <li>✔️ 24/7 Phone Support</li>
+                </ul>
+                <button onclick="goToPayment('Platinum')">Select Platinum</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="payment-view" class="view-container hidden">
+        <div class="card" style="max-width: 500px; margin: 0 auto;">
+            <h2>Checkout: <span id="checkout-tier"></span></h2>
+            <p>Select your payment mode and complete the transaction.</p>
+            
+            <label>Billing Cycle:</label>
+            <select id="billing-cycle">
+                <option value="monthly">Monthly</option>
+                <option value="yearly">Yearly (Save ~10%)</option>
+            </select>
+
+            <label>Net Banking Provider:</label>
+            <select id="bank-provider">
+                <option>HDFC Bank</option>
+                <option>State Bank of India</option>
+                <option>ICICI Bank</option>
+                <option>Axis Bank</option>
+                <option>American Express</option>
+                <option>Kotaka Mahindra</option>
+            </select>
+
+            <div style="display: flex; gap: 12px; margin-top: 24px;">
+                <button style="flex: 1;" onclick="processPayment()">Complete Payment</button>
+                <button class="secondary" style="flex: 1;" onclick="switchView('upgrade-view')">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="profile-modal" class="modal-overlay hidden">
+        <div class="card modal-content">
+            <h2>User Profile</h2>
+            <p><strong>Username:</strong> <span id="profile-username">Guest</span></p>
+            <p><strong>Current Plan:</strong> <span id="profile-plan" style="color: var(--primary-brand); font-weight: bold;">Basic</span></p>
+            
+            <div id="upgrade-prompt" class="card" style="margin-top: 24px; background-color: var(--bg-color);">
+                <h3>Want more features?</h3>
+                <p>Upgrade to add beneficiaries and SMS/WhatsApp alerts.</p>
+                <div style="display: flex; gap: 12px;">
+                    <button onclick="startUpgrade()">Yes, Upgrade</button>
+                    <button class="secondary" onclick="closeModal('profile-modal')">No, maybe later</button>
+                </div>
+            </div>
+
+            <div style="margin-top: 24px; text-align: right;">
+                <button class="secondary" onclick="closeModal('profile-modal'); switchView('dashboard-view')">Back to Dashboard</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="settings-modal" class="modal-overlay hidden">
+        <div class="card modal-content">
+            <h2>Hardware Integrations</h2>
+            <p>Connect your physical IoT devices to the Sentinel Dashboard.</p>
+            
+            <label>Arduino UNO Port/IP:</label>
+            <input type="text" placeholder="e.g., COM3 or 192.168.1.50">
+            
+            <label>WhatsApp Alert Number:</label>
+            <input type="text" placeholder="+1234567890">
+
+            <label>WhatsApp (CallMeBotvAPI)</label>
+            <input type="text" placeholder="API Key">
+
+            <div style="display: flex; gap: 12px; margin-top: 16px;">
+                <button onclick="closeModal('settings-modal')">Save Connections</button>
+                <button class="secondary" onclick="closeModal('settings-modal')">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="history-modal" class="modal-overlay hidden">
+        <div class="card modal-content">
+            <h2><span id="history-title"></span> Sensor History</h2>
+            <p>Detailed recordings from your Arduino endpoints.</p>
+            
+            <ul id="history-list" style="list-style: none;">
+                </ul>
+
+            <div style="margin-top: 24px; text-align: right;">
+                <button onclick="closeModal('history-modal')">Close</button>
+            </div>
+        </div>
+    </div>
+    <!--JavaScript will go here from -->
+    <script src="Lan Lords.js"></script>
+</body>
+</html>
